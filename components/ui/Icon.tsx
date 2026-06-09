@@ -4,6 +4,7 @@ export type IconName =
   | "upload"
   | "download"
   | "copy"
+  | "paste"
   | "share"
   | "reset"
   | "image"
@@ -32,6 +33,13 @@ const PATHS: Record<IconName, ReactNode> = {
     <>
       <rect x="8" y="8" width="11" height="11" />
       <path d="M5 16V5h11" />
+    </>
+  ),
+  paste: (
+    <>
+      <rect x="6" y="5" width="12" height="16" />
+      <path d="M9 5V3h6v2" />
+      <path d="M9 11h6M9 15h6" />
     </>
   ),
   share: (

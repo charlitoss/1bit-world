@@ -27,6 +27,33 @@ export async function copyImageToClipboard(blob: Blob): Promise<void> {
   await navigator.clipboard.write([item]);
 }
 
+export function canReadClipboard(): boolean {
+  return (
+    typeof navigator !== "undefined" &&
+    !!navigator.clipboard &&
+    typeof navigator.clipboard.read === "function"
+  );
+}
+
+/** Read an image off the clipboard via the async Clipboard API (needs a user gesture). */
+export async function readImageFromClipboard(): Promise<File | null> {
+  if (!canReadClipboard()) return null;
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      const type = item.types.find((t) => t.startsWith("image/"));
+      if (type) {
+        const blob = await item.getType(type);
+        const ext = type.split("/")[1]?.split("+")[0] || "png";
+        return new File([blob], `pasted.${ext}`, { type });
+      }
+    }
+  } catch {
+    // Permission denied, no gesture, or unsupported — caller handles the null.
+  }
+  return null;
+}
+
 export function canShareFiles(blob: Blob, filename: string): boolean {
   if (typeof navigator === "undefined" || !navigator.canShare) return false;
   try {

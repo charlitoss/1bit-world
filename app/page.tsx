@@ -9,6 +9,7 @@ import { ControlsPanel } from "@/components/ControlsPanel";
 import { ExportBar } from "@/components/ExportBar";
 import { FilePicker } from "@/components/ui/FilePicker";
 import { Icon } from "@/components/ui/Icon";
+import { canReadClipboard, readImageFromClipboard } from "@/lib/export/share";
 
 export default function Home() {
   const { settings } = useSettings();
@@ -30,6 +31,11 @@ export default function Home() {
     setBaseName(file.name.replace(/\.[^.]+$/, "") || "image");
     setOutput(null);
   }, []);
+
+  const pasteFromClipboard = useCallback(async () => {
+    const file = await readImageFromClipboard();
+    if (file) loadFile(file);
+  }, [loadFile]);
 
   // Re-render whenever the image or any setting changes (debounced, latest-wins).
   useEffect(() => {
@@ -80,6 +86,16 @@ export default function Home() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          {bitmap && canReadClipboard() && (
+            <button
+              onClick={pasteFromClipboard}
+              title="Paste image from clipboard"
+              className="btn px-3 py-2 text-sm font-display uppercase tracking-wider"
+            >
+              <Icon name="paste" size={18} />
+              <span className="hidden sm:inline">Paste</span>
+            </button>
+          )}
           {bitmap && (
             <FilePicker
               onFile={loadFile}
