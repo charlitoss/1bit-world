@@ -27,16 +27,30 @@ export const ALGORITHMS: AlgorithmDef[] = [
 
 export type RGB = [number, number, number];
 
+/** Sentinel palette id for user-picked colors. */
+export const CUSTOM_PALETTE_ID = "custom";
+
 /** User-facing settings, persisted in the store. */
 export interface DitherSettings {
   algorithm: AlgorithmId;
   paletteId: string;
+  /** Used when paletteId === CUSTOM_PALETTE_ID. */
+  customDark: string;
+  customLight: string;
   /** 0..255 — midpoint cutoff / bias. */
   threshold: number;
   /** -100..100. */
   contrast: number;
   /** -100..100. */
   brightness: number;
+  /** 0.2..3.0 — midtone curve (1 = none). */
+  gamma: number;
+  /** -100..100 — soften (−) ↔ sharpen (+). */
+  sharpen: number;
+  /** 0..100 — film-grain noise. */
+  grain: number;
+  /** 0..100 — dither strength (0 = hard threshold, 100 = full). */
+  ditherAmount: number;
   /** 1..12 — pixel block size (chunkiness). */
   scale: number;
   invert: boolean;
@@ -48,6 +62,10 @@ export interface ProcessParams {
   threshold: number;
   contrast: number;
   brightness: number;
+  gamma: number;
+  sharpen: number;
+  grain: number;
+  ditherAmount: number;
   invert: boolean;
   dark: RGB;
   light: RGB;
@@ -56,9 +74,15 @@ export interface ProcessParams {
 export const DEFAULT_SETTINGS: DitherSettings = {
   algorithm: "atkinson",
   paletteId: "parchment",
+  customDark: "#1e1a17",
+  customLight: "#e8e0cb",
   threshold: 128,
   contrast: 10,
   brightness: 0,
+  gamma: 1,
+  sharpen: 0,
+  grain: 0,
+  ditherAmount: 100,
   scale: 2,
   invert: false,
 };

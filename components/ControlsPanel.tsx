@@ -2,34 +2,70 @@
 
 import type { ReactNode } from "react";
 import { useSettings } from "@/lib/store";
-import { ALGORITHMS } from "@/lib/dither/types";
+import { ALGORITHMS, CUSTOM_PALETTE_ID } from "@/lib/dither/types";
 import { PALETTES } from "@/lib/dither/palettes";
 import { Slider } from "./ui/Slider";
 import { Icon } from "./ui/Icon";
 
-function Section({
+function Group({
   title,
   children,
+  first,
 }: {
   title: string;
   children: ReactNode;
+  first?: boolean;
 }) {
   return (
-    <div className="space-y-2">
+    <section
+      className={
+        first ? "space-y-3" : "space-y-3 border-t-2 border-ink/15 pt-4"
+      }
+    >
       <h3 className="font-display text-xs uppercase tracking-widest text-ink-2">
         {title}
       </h3>
       {children}
-    </div>
+    </section>
+  );
+}
+
+function ColorSwatch({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="flex items-center gap-1.5">
+      <span className="text-[10px] uppercase tracking-wider text-ink-2">
+        {label}
+      </span>
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-7 w-9 cursor-pointer border-2 border-ink bg-paper p-0"
+      />
+    </label>
   );
 }
 
 export function ControlsPanel() {
   const { settings, update, reset } = useSettings();
+  const isCustom = settings.paletteId === CUSTOM_PALETTE_ID;
+
+  const setCustomColor = (key: "customDark" | "customLight", v: string) => {
+    update(key, v);
+    update("paletteId", CUSTOM_PALETTE_ID);
+  };
 
   return (
     <div className="panel flex flex-col gap-5 overflow-y-auto p-4">
-      <Section title="Algorithm">
+      <Group title="Dither" first>
         <div className="grid grid-cols-2 gap-2">
           {ALGORITHMS.map((a) => (
             <button
@@ -43,9 +79,32 @@ export function ControlsPanel() {
             </button>
           ))}
         </div>
-      </Section>
+        <Slider
+          label="Dither amount"
+          value={settings.ditherAmount}
+          min={0}
+          max={100}
+          onChange={(v) => update("ditherAmount", v)}
+          format={(v) => `${v}%`}
+        />
+        <Slider
+          label="Pixel size"
+          value={settings.scale}
+          min={1}
+          max={12}
+          onChange={(v) => update("scale", v)}
+          format={(v) => `${v}×`}
+        />
+        <Slider
+          label="Threshold"
+          value={settings.threshold}
+          min={1}
+          max={254}
+          onChange={(v) => update("threshold", v)}
+        />
+      </Group>
 
-      <Section title="Palette">
+      <Group title="Palette">
         <div className="flex flex-wrap gap-2">
           {PALETTES.map((p) => {
             const on = settings.paletteId === p.id;
@@ -71,60 +130,91 @@ export function ControlsPanel() {
             );
           })}
         </div>
-      </Section>
 
-      <Section title="Adjust">
-        <div className="space-y-4">
-          <Slider
-            label="Pixel size"
-            value={settings.scale}
-            min={1}
-            max={12}
-            onChange={(v) => update("scale", v)}
-            format={(v) => `${v}×`}
-          />
-          <Slider
-            label="Threshold"
-            value={settings.threshold}
-            min={1}
-            max={254}
-            onChange={(v) => update("threshold", v)}
-          />
-          <Slider
-            label="Contrast"
-            value={settings.contrast}
-            min={-100}
-            max={100}
-            onChange={(v) => update("contrast", v)}
-          />
-          <Slider
-            label="Brightness"
-            value={settings.brightness}
-            min={-100}
-            max={100}
-            onChange={(v) => update("brightness", v)}
-          />
+        <div
+          className={`flex items-center gap-2 border-2 border-ink px-2 py-1.5 ${
+            isCustom ? "bg-ink/10" : ""
+          }`}
+        >
+          <button
+            onClick={() => update("paletteId", CUSTOM_PALETTE_ID)}
+            className="flex items-center gap-1 font-display text-[11px] uppercase tracking-wide"
+          >
+            {isCustom && <Icon name="check" size={14} />}
+            Custom
+          </button>
+          <div className="ml-auto flex items-center gap-3">
+            <ColorSwatch
+              label="Dark"
+              value={settings.customDark}
+              onChange={(v) => setCustomColor("customDark", v)}
+            />
+            <ColorSwatch
+              label="Light"
+              value={settings.customLight}
+              onChange={(v) => setCustomColor("customLight", v)}
+            />
+          </div>
         </div>
-      </Section>
 
-      <div className="flex items-center justify-between">
         <button
           onClick={() => update("invert", !settings.invert)}
-          className={`btn px-3 py-2 text-sm font-display uppercase tracking-wider ${
+          className={`btn w-full px-3 py-2 text-sm font-display uppercase tracking-wider ${
             settings.invert ? "btn-on" : ""
           }`}
         >
           <Icon name="invert" size={18} />
           Invert
         </button>
-        <button
-          onClick={reset}
-          className="btn px-3 py-2 text-sm font-display uppercase tracking-wider"
-        >
-          <Icon name="reset" size={18} />
-          Reset
-        </button>
-      </div>
+      </Group>
+
+      <Group title="Adjust">
+        <Slider
+          label="Brightness"
+          value={settings.brightness}
+          min={-100}
+          max={100}
+          onChange={(v) => update("brightness", v)}
+        />
+        <Slider
+          label="Contrast"
+          value={settings.contrast}
+          min={-100}
+          max={100}
+          onChange={(v) => update("contrast", v)}
+        />
+        <Slider
+          label="Gamma"
+          value={settings.gamma}
+          min={0.2}
+          max={3}
+          step={0.05}
+          onChange={(v) => update("gamma", v)}
+          format={(v) => v.toFixed(2)}
+        />
+        <Slider
+          label="Sharpen ↔ Soften"
+          value={settings.sharpen}
+          min={-100}
+          max={100}
+          onChange={(v) => update("sharpen", v)}
+        />
+        <Slider
+          label="Grain"
+          value={settings.grain}
+          min={0}
+          max={100}
+          onChange={(v) => update("grain", v)}
+        />
+      </Group>
+
+      <button
+        onClick={reset}
+        className="btn justify-center px-3 py-2 text-sm font-display uppercase tracking-wider"
+      >
+        <Icon name="reset" size={18} />
+        Reset all
+      </button>
     </div>
   );
 }

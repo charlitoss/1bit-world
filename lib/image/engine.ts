@@ -4,7 +4,11 @@
 
 import { processImage } from "../dither/process";
 import { getPalette, hexToRgb } from "../dither/palettes";
-import type { DitherSettings, ProcessParams } from "../dither/types";
+import {
+  CUSTOM_PALETTE_ID,
+  type DitherSettings,
+  type ProcessParams,
+} from "../dither/types";
 
 /** Longest-edge cap for the live preview so huge images stay responsive. */
 const PREVIEW_MAX = 1600;
@@ -28,15 +32,20 @@ function createCanvas(w: number, h: number): HTMLCanvasElement {
 }
 
 function paramsFromSettings(s: DitherSettings): ProcessParams {
+  const isCustom = s.paletteId === CUSTOM_PALETTE_ID;
   const pal = getPalette(s.paletteId);
   return {
     algorithm: s.algorithm,
     threshold: s.threshold,
     contrast: s.contrast,
     brightness: s.brightness,
+    gamma: s.gamma,
+    sharpen: s.sharpen,
+    grain: s.grain,
+    ditherAmount: s.ditherAmount,
     invert: s.invert,
-    dark: hexToRgb(pal.dark),
-    light: hexToRgb(pal.light),
+    dark: hexToRgb(isCustom ? s.customDark : pal.dark),
+    light: hexToRgb(isCustom ? s.customLight : pal.light),
   };
 }
 

@@ -116,7 +116,7 @@ export default function Home() {
               />
               <ExportBar bitmap={bitmap} baseName={baseName} />
             </section>
-            <aside className="w-full shrink-0 lg:w-80">
+            <aside className="w-full shrink-0 lg:w-96">
               <ControlsPanel />
             </aside>
           </div>

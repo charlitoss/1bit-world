@@ -56,25 +56,91 @@ const KERNELS: Record<string, DiffusionKernel> = {
   },
 };
 
-/** Rec.709 luminance with contrast + brightness pre-adjustment, into a Float32 buffer. */
+/** Rec.709 luminance with contrast, brightness and gamma, into a Float32 buffer. */
 function toGray(
   src: Uint8ClampedArray,
   w: number,
   h: number,
   contrast: number,
   brightness: number,
+  gamma: number,
 ): Float32Array {
   const gray = new Float32Array(w * h);
   // Contrast slider -100..100 → standard factor.
   const c = Math.max(-255, Math.min(255, contrast * 2.55));
   const cf = (259 * (c + 255)) / (255 * (259 - c));
   const bAdd = brightness * 1.28; // -100..100 → ~-128..128
+  const invGamma = 1 / Math.max(0.01, gamma);
+  const applyGamma = gamma !== 1;
   for (let i = 0, p = 0; i < gray.length; i++, p += 4) {
     let l = 0.2126 * src[p] + 0.7152 * src[p + 1] + 0.0722 * src[p + 2];
     l = cf * (l - 128) + 128 + bAdd;
-    gray[i] = l < 0 ? 0 : l > 255 ? 255 : l;
+    if (l < 0) l = 0;
+    else if (l > 255) l = 255;
+    if (applyGamma) l = 255 * Math.pow(l / 255, invGamma);
+    gray[i] = l;
   }
   return gray;
+}
+
+/** Unsharp mask (+) / box-blur soften (−) over the grayscale buffer. amount: -100..100. */
+function applySharpen(
+  gray: Float32Array,
+  w: number,
+  h: number,
+  amount: number,
+): void {
+  if (!amount) return;
+  const blur = new Float32Array(gray.length);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let sum = 0;
+      let cnt = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+          sum += gray[ny * w + nx];
+          cnt++;
+        }
+      }
+      blur[y * w + x] = sum / cnt;
+    }
+  }
+  const k = amount / 100;
+  if (k > 0) {
+    const s = k * 2; // sharpen strength
+    for (let i = 0; i < gray.length; i++) {
+      const v = gray[i] + s * (gray[i] - blur[i]);
+      gray[i] = v < 0 ? 0 : v > 255 ? 255 : v;
+    }
+  } else {
+    const t = -k;
+    for (let i = 0; i < gray.length; i++) {
+      gray[i] = gray[i] * (1 - t) + blur[i] * t;
+    }
+  }
+}
+
+/** Deterministic per-pixel grain (stable across re-renders). amount: 0..100. */
+function applyGrain(
+  gray: Float32Array,
+  w: number,
+  h: number,
+  amount: number,
+): void {
+  if (!amount) return;
+  const amp = (amount / 100) * 70;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+      const n = s - Math.floor(s); // 0..1
+      const i = y * w + x;
+      const v = gray[i] + (n - 0.5) * 2 * amp;
+      gray[i] = v < 0 ? 0 : v > 255 ? 255 : v;
+    }
+  }
 }
 
 function runErrorDiffusion(
@@ -83,6 +149,7 @@ function runErrorDiffusion(
   h: number,
   threshold: number,
   kernel: DiffusionKernel,
+  strength: number,
 ): void {
   const { divisor, taps } = kernel;
   for (let y = 0; y < h; y++) {
@@ -94,7 +161,7 @@ function runErrorDiffusion(
       const i = y * w + x;
       const old = gray[i];
       const nv = old < threshold ? 0 : 255;
-      const err = old - nv;
+      const err = (old - nv) * strength;
       gray[i] = nv;
       for (const [dx, dy, wt] of taps) {
         const sx = x + (serp ? -dx : dx);
@@ -112,6 +179,7 @@ function runOrdered(
   h: number,
   threshold: number,
   matrix: { data: Float32Array; size: number },
+  strength: number,
 ): void {
   const { data, size } = matrix;
   const bias = 128 - threshold; // threshold slider shifts overall darkness
@@ -119,7 +187,9 @@ function runOrdered(
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
       const m = data[(y % size) * size + (x % size)] * 255;
-      gray[i] = gray[i] + bias > m ? 255 : 0;
+      // Strength scales the matrix deviation around mid (0 → hard threshold).
+      const mEff = 127.5 + (m - 127.5) * strength;
+      gray[i] = gray[i] + bias > mEff ? 255 : 0;
     }
   }
 }
@@ -131,20 +201,23 @@ function runThreshold(gray: Float32Array, threshold: number): void {
 /** Run the full pipeline and return a freshly allocated ImageData (working res). */
 export function processImage(src: ImageData, p: ProcessParams): ImageData {
   const { width: w, height: h } = src;
-  const gray = toGray(src.data, w, h, p.contrast, p.brightness);
+  const gray = toGray(src.data, w, h, p.contrast, p.brightness, p.gamma);
+  applySharpen(gray, w, h, p.sharpen);
+  applyGrain(gray, w, h, p.grain);
+  const strength = p.ditherAmount / 100;
 
   switch (p.algorithm) {
     case "threshold":
       runThreshold(gray, p.threshold);
       break;
     case "bayer4":
-      runOrdered(gray, w, h, p.threshold, BAYER_4);
+      runOrdered(gray, w, h, p.threshold, BAYER_4, strength);
       break;
     case "bayer8":
-      runOrdered(gray, w, h, p.threshold, BAYER_8);
+      runOrdered(gray, w, h, p.threshold, BAYER_8, strength);
       break;
     default:
-      runErrorDiffusion(gray, w, h, p.threshold, KERNELS[p.algorithm]);
+      runErrorDiffusion(gray, w, h, p.threshold, KERNELS[p.algorithm], strength);
   }
 
   // Map 1-bit result → two-tone palette.
