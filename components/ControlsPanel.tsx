@@ -1,9 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useSettings } from "@/lib/store";
-import { ALGORITHMS, CUSTOM_PALETTE_ID } from "@/lib/dither/types";
+import { ALGORITHMS, CUSTOM_PALETTE_ID, type PatternId } from "@/lib/dither/types";
 import { PALETTES } from "@/lib/dither/palettes";
+import { PATTERNS, buildStamp } from "@/lib/dither/patterns";
 import { Slider } from "./ui/Slider";
 import { Icon } from "./ui/Icon";
 
@@ -30,28 +31,34 @@ function Group({
   );
 }
 
-function ColorSwatch({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <label className="flex items-center gap-1.5">
-      <span className="text-[10px] uppercase tracking-wider text-ink-2">
-        {label}
-      </span>
-      <input
-        type="color"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-7 w-9 cursor-pointer border-2 border-ink bg-paper p-0"
-      />
-    </label>
-  );
+/** Tiled preview of a pattern motif at full ink density. */
+function PatternSwatch({ pattern }: { pattern: PatternId }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return;
+    const cell = 6;
+    const cells = 4;
+    const size = cell * cells;
+    cv.width = size;
+    cv.height = size;
+    const ctx = cv.getContext("2d");
+    if (!ctx) return;
+    ctx.fillStyle = "#e8e0cb"; // paper
+    ctx.fillRect(0, 0, size, size);
+    const stamp = buildStamp(pattern, cell);
+    ctx.fillStyle = "#1e1a17"; // ink
+    for (let cy = 0; cy < cells; cy++) {
+      for (let cx = 0; cx < cells; cx++) {
+        for (let y = 0; y < cell; y++) {
+          for (let x = 0; x < cell; x++) {
+            if (stamp[y * cell + x]) ctx.fillRect(cx * cell + x, cy * cell + y, 1, 1);
+          }
+        }
+      }
+    }
+  }, [pattern]);
+  return <canvas ref={ref} className="pixelated h-9 w-9" />;
 }
 
 export function ControlsPanel() {
@@ -88,6 +95,38 @@ export function ControlsPanel() {
           format={(v) => `${v}%`}
         />
         <Slider
+          label="Threshold"
+          value={settings.threshold}
+          min={1}
+          max={254}
+          onChange={(v) => update("threshold", v)}
+        />
+      </Group>
+
+      <Group title="Cell style">
+        <div className="grid grid-cols-3 gap-2">
+          {PATTERNS.map((p) => {
+            const on = settings.pattern === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => update("pattern", p.id)}
+                title={p.name}
+                className={`flex flex-col items-center gap-1 border-2 border-ink p-1.5 ${
+                  on ? "bg-ink text-paper" : "bg-paper"
+                }`}
+              >
+                <span className="border-2 border-ink">
+                  <PatternSwatch pattern={p.id} />
+                </span>
+                <span className="font-display text-[10px] uppercase tracking-wide">
+                  {p.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <Slider
           label="Pixel size"
           value={settings.scale}
           min={1}
@@ -95,13 +134,11 @@ export function ControlsPanel() {
           onChange={(v) => update("scale", v)}
           format={(v) => `${v}×`}
         />
-        <Slider
-          label="Threshold"
-          value={settings.threshold}
-          min={1}
-          max={254}
-          onChange={(v) => update("threshold", v)}
-        />
+        {settings.scale < 3 && settings.pattern !== "square" && (
+          <p className="text-[11px] text-ink-2">
+            Tip: raise pixel size to see the pattern.
+          </p>
+        )}
       </Group>
 
       <Group title="Palette">
@@ -216,5 +253,29 @@ export function ControlsPanel() {
         Reset all
       </button>
     </div>
+  );
+}
+
+function ColorSwatch({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="flex items-center gap-1.5">
+      <span className="text-[10px] uppercase tracking-wider text-ink-2">
+        {label}
+      </span>
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-7 w-9 cursor-pointer border-2 border-ink bg-paper p-0"
+      />
+    </label>
   );
 }

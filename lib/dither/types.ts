@@ -25,6 +25,18 @@ export const ALGORITHMS: AlgorithmDef[] = [
   { id: "threshold", name: "Threshold", kind: "threshold" },
 ];
 
+/** Motif stamped into each "ink" cell (how the image is drawn, not how it's dithered). */
+export type PatternId =
+  | "square"
+  | "dot"
+  | "ring"
+  | "plus"
+  | "cross"
+  | "diamond"
+  | "hline"
+  | "vline"
+  | "slant";
+
 export type RGB = [number, number, number];
 
 /** Sentinel palette id for user-picked colors. */
@@ -51,12 +63,15 @@ export interface DitherSettings {
   grain: number;
   /** 0..100 — dither strength (0 = hard threshold, 100 = full). */
   ditherAmount: number;
-  /** 1..12 — pixel block size (chunkiness). */
+  /** 1..12 — pixel block / cell size (chunkiness). */
   scale: number;
+  /** Motif stamped into ink cells. */
+  pattern: PatternId;
   invert: boolean;
 }
 
-/** Resolved parameters passed into the pure pixel kernel (DOM-free, worker-safe). */
+/** Resolved parameters passed into the pure dither kernel (DOM-free, worker-safe).
+ *  Colours, pattern and invert are applied later, at paint time. */
 export interface ProcessParams {
   algorithm: AlgorithmId;
   threshold: number;
@@ -66,9 +81,6 @@ export interface ProcessParams {
   sharpen: number;
   grain: number;
   ditherAmount: number;
-  invert: boolean;
-  dark: RGB;
-  light: RGB;
 }
 
 export const DEFAULT_SETTINGS: DitherSettings = {
@@ -84,5 +96,6 @@ export const DEFAULT_SETTINGS: DitherSettings = {
   grain: 0,
   ditherAmount: 100,
   scale: 2,
+  pattern: "square",
   invert: false,
 };

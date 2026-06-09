@@ -12,9 +12,13 @@ upload, no storage. That also makes it free to run and trivial to deploy.
 
 - **Dithering algorithms** — Atkinson, Floyd–Steinberg, Burkes, Sierra Lite
   (error diffusion), Ordered 4×4 / 8×8 (Bayer), and plain threshold.
+- **Cell patterns** — build the image from motifs, not just square pixels:
+  square, dot (halftone), ring, plus, cross (crosshatch), diamond, lines, bars,
+  slant.
 - **Two-tone palettes** — Parchment (default), Mono, Blueprint, Amber CRT,
-  Game Boy, Noir.
-- **Live controls** — pixel size, threshold, contrast, brightness, invert.
+  Game Boy, Noir, plus a **custom** two-colour picker.
+- **Live controls** — pixel size, threshold, dither amount, gamma, contrast,
+  brightness, sharpen↔soften, grain, invert.
 - **Off-thread processing** — pixel work runs in a Web Worker, so the UI stays
   smooth even on large images.
 - **Export** — download PNG, copy to clipboard, or native share (mobile).
@@ -36,8 +40,9 @@ upload, no storage. That also makes it free to run and trivial to deploy.
 Per image, the pipeline is:
 
 ```
-decode → downsample (pixel size) → grayscale (Rec.709) + contrast/brightness
-       → dither to 1-bit → map to 2-colour palette → upscale (nearest-neighbour)
+decode → downsample (pixel size) → grayscale (Rec.709) + contrast/brightness/gamma
+       → sharpen/grain → dither to a 1-bit mask
+       → stamp the cell pattern + map to a 2-colour palette
 ```
 
 The core kernel ([`lib/dither/process.ts`](lib/dither/process.ts)) is a pure,

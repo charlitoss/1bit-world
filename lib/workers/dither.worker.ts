@@ -15,7 +15,7 @@ self.onmessage = (e: MessageEvent) => {
   const src = new ImageData(new Uint8ClampedArray(buffer), width, height);
   const out = processImage(src, params);
   (self as unknown as Worker).postMessage(
-    { id, buffer: out.data.buffer, width: out.width, height: out.height },
-    [out.data.buffer],
+    { id, buffer: out.mask.buffer, width: out.width, height: out.height },
+    [out.mask.buffer],
   );
 };

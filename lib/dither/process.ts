@@ -198,8 +198,15 @@ function runThreshold(gray: Float32Array, threshold: number): void {
   for (let i = 0; i < gray.length; i++) gray[i] = gray[i] < threshold ? 0 : 255;
 }
 
-/** Run the full pipeline and return a freshly allocated ImageData (working res). */
-export function processImage(src: ImageData, p: ProcessParams): ImageData {
+export interface DitherResult {
+  /** 1 = ink (shadow) cell, 0 = paper. Working resolution. */
+  mask: Uint8Array;
+  width: number;
+  height: number;
+}
+
+/** Run the tone→1-bit pipeline and return a binary mask (colours/pattern come later). */
+export function processImage(src: ImageData, p: ProcessParams): DitherResult {
   const { width: w, height: h } = src;
   const gray = toGray(src.data, w, h, p.contrast, p.brightness, p.gamma);
   applySharpen(gray, w, h, p.sharpen);
@@ -220,16 +227,7 @@ export function processImage(src: ImageData, p: ProcessParams): ImageData {
       runErrorDiffusion(gray, w, h, p.threshold, KERNELS[p.algorithm], strength);
   }
 
-  // Map 1-bit result → two-tone palette.
-  const [d0, d1, d2] = p.invert ? p.light : p.dark;
-  const [l0, l1, l2] = p.invert ? p.dark : p.light;
-  const out = new Uint8ClampedArray(w * h * 4);
-  for (let i = 0, o = 0; i < gray.length; i++, o += 4) {
-    const lit = gray[i] >= 128;
-    out[o] = lit ? l0 : d0;
-    out[o + 1] = lit ? l1 : d1;
-    out[o + 2] = lit ? l2 : d2;
-    out[o + 3] = 255;
-  }
-  return new ImageData(out, w, h);
+  const mask = new Uint8Array(w * h);
+  for (let i = 0; i < gray.length; i++) mask[i] = gray[i] < 128 ? 1 : 0;
+  return { mask, width: w, height: h };
 }
