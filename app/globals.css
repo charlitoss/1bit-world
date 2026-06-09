@@ -1,26 +1,142 @@
 @import "tailwindcss";
 
+@theme {
+  --color-paper: #e8e0cb;
+  --color-paper-2: #ddd2b6;
+  --color-paper-3: #cdbf9c;
+  --color-ink: #1e1a17;
+  --color-ink-2: #4a4136;
+
+  --font-display: var(--font-pixel), ui-monospace, monospace;
+  --font-mono: var(--font-mono-ui), ui-monospace, monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  height: 100%;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  /* Faint dithered-paper dot texture. */
+  background-image: radial-gradient(rgba(30, 26, 23, 0.07) 0.5px, transparent 0.6px);
+  background-size: 4px 4px;
+  -webkit-font-smoothing: none;
+}
+
+/* ---- Retro primitives ---------------------------------------------------- */
+
+/* Triple-line "rope" border panel. */
+.panel {
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  box-shadow:
+    inset 0 0 0 2px var(--color-paper),
+    inset 0 0 0 4px var(--color-ink);
+}
+
+/* Chunky tactile button with a hard offset shadow. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  box-shadow: 3px 3px 0 0 var(--color-ink);
+  color: var(--color-ink);
+  transition:
+    transform 60ms steps(2, end),
+    box-shadow 60ms steps(2, end),
+    background-color 60ms;
+  user-select: none;
+}
+.btn:hover:not(:disabled) {
+  background-color: var(--color-paper-2);
+}
+.btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 var(--color-ink);
+}
+.btn:disabled {
+  opacity: 0.4;
+  box-shadow: 2px 2px 0 0 var(--color-ink);
+  cursor: not-allowed;
+}
+
+/* Selected/pressed-in state for segmented controls. */
+.btn-on {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 var(--color-ink);
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Range slider, themed 1-bit. */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: var(--color-paper-3);
+  border: 2px solid var(--color-ink);
+}
+.slider::-moz-range-track {
+  height: 6px;
+  background: var(--color-paper-3);
+  border: 2px solid var(--color-ink);
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 18px;
+  margin-top: -8px;
+  background: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  box-shadow: 2px 2px 0 0 rgba(30, 26, 23, 0.35);
+}
+.slider::-moz-range-thumb {
+  width: 12px;
+  height: 16px;
+  border: 2px solid var(--color-ink);
+  background: var(--color-ink);
+  border-radius: 0;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Checkerboard for "no image" / transparency hints. */
+.checker {
+  background-image:
+    linear-gradient(45deg, var(--color-paper-2) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-paper-2) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-paper-2) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-paper-2) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
 }
