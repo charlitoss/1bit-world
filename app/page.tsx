@@ -139,11 +139,18 @@ export default function Home() {
 
       <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 lg:flex-row">
         {!bitmap ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4">
-            <h2 className="mx-auto max-w-3xl text-center font-display leading-[1.18] text-[26px] sm:text-[38px] lg:text-[52px]">
-              Dither anything in your browser
-            </h2>
+          <div className="flex min-h-0 flex-1 flex-col items-center px-4">
+            {/* Top region — heading centered midway between header and box. */}
+            <div className="flex flex-1 items-center justify-center">
+              <h2 className="text-center font-display leading-[1.18] text-[26px] sm:text-[38px] lg:text-[52px]">
+                Dither anything
+                <br />
+                in your browser
+              </h2>
+            </div>
             <Dropzone onFile={loadFile} />
+            {/* Equal bottom spacer keeps the box vertically centered. */}
+            <div className="flex-1" aria-hidden />
           </div>
         ) : (
           <>
