@@ -71,7 +71,7 @@ export function ControlsPanel() {
   };
 
   return (
-    <div className="panel flex flex-col gap-5 overflow-y-auto p-4">
+    <div className="panel flex min-h-0 w-full flex-1 flex-col gap-5 overflow-y-auto p-4">
       <Group title="Dither" first>
         <div className="grid grid-cols-2 gap-2">
           {ALGORITHMS.map((a) => (

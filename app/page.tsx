@@ -9,6 +9,8 @@ import { ControlsPanel } from "@/components/ControlsPanel";
 import { ExportBar } from "@/components/ExportBar";
 import { FilePicker } from "@/components/ui/FilePicker";
 import { Icon } from "@/components/ui/Icon";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { EarthLogo } from "@/components/ui/EarthLogo";
 import { canReadClipboard, readImageFromClipboard } from "@/lib/export/share";
 
 export default function Home() {
@@ -75,17 +77,21 @@ export default function Home() {
   );
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
-      <header className="flex items-center justify-between gap-3 border-b-2 border-ink px-4 py-3">
-        <div className="flex items-baseline gap-3">
-          <h1 className="font-display text-2xl uppercase tracking-wider">
-            1bit<span className="text-ink-2">.world</span>
-          </h1>
-          <span className="hidden text-xs text-ink-2 sm:inline">
-            dither anything · in your browser
-          </span>
+    <div className="flex h-dvh flex-col overflow-hidden">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 border-ink px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <EarthLogo className="h-9 w-9" />
+          <div className="flex items-baseline gap-3">
+            <h1 className="font-display text-2xl uppercase tracking-wider">
+              1bit<span className="text-ink-2">.world</span>
+            </h1>
+            <span className="hidden text-xs text-ink-2 sm:inline">
+              dither anything · in your browser
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {bitmap && canReadClipboard() && (
             <button
               onClick={pasteFromClipboard}
@@ -117,14 +123,14 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex min-h-0 flex-1 flex-col gap-4 p-4">
+      <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 lg:flex-row">
         {!bitmap ? (
           <div className="flex flex-1 items-center justify-center">
             <Dropzone onFile={loadFile} />
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
-            <section className="flex min-h-[60vh] flex-1 flex-col gap-3 lg:min-h-0">
+          <>
+            <section className="flex min-h-0 flex-1 flex-col gap-3">
               <PreviewCanvas
                 output={output}
                 busy={busy}
@@ -132,14 +138,14 @@ export default function Home() {
               />
               <ExportBar bitmap={bitmap} baseName={baseName} />
             </section>
-            <aside className="w-full shrink-0 lg:w-96">
+            <aside className="flex min-h-0 w-full flex-1 lg:w-96 lg:flex-none">
               <ControlsPanel />
             </aside>
-          </div>
+          </>
         )}
       </main>
 
-      <footer className="border-t-2 border-ink px-4 py-2 text-center text-[11px] text-ink-2">
+      <footer className="shrink-0 border-t-2 border-ink px-4 py-2 text-center text-[11px] text-ink-2">
         100% client-side — your images never leave this device. Video support
         coming next.
       </footer>
