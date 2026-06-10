@@ -101,7 +101,7 @@ export default function Home() {
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
           <EarthLogo className="h-7 w-7 shrink-0 sm:h-9 sm:w-9" />
-          <h1 className="min-w-0 font-display text-[11px] uppercase sm:text-2xl">
+          <h1 className="min-w-0 font-display text-[15px] uppercase sm:text-[19px]">
             1bit<span className="text-ink-2">.world</span>
           </h1>
         </div>
@@ -142,7 +142,7 @@ export default function Home() {
           <div className="flex min-h-0 flex-1 flex-col items-center px-4">
             {/* Top region — heading centered midway between header and box. */}
             <div className="flex flex-1 items-center justify-center">
-              <h2 className="text-center font-display leading-[1.18] text-[26px] sm:text-[38px] lg:text-[52px]">
+              <h2 className="text-center font-display leading-[1.18] text-[26px] sm:text-[36px]">
                 Dither anything
                 <br />
                 in your browser
