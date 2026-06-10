@@ -77,7 +77,7 @@ export default function Home() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
-      <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 border-ink px-4 py-3">
+      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
           <EarthLogo className="h-7 w-7 shrink-0 sm:h-9 sm:w-9" />
           <div className="flex min-w-0 items-baseline gap-3">
