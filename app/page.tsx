@@ -79,13 +79,13 @@ export default function Home() {
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
       <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 border-ink px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <EarthLogo className="h-9 w-9" />
-          <div className="flex items-baseline gap-3">
-            <h1 className="font-display text-2xl uppercase tracking-wider">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+          <EarthLogo className="h-7 w-7 shrink-0 sm:h-9 sm:w-9" />
+          <div className="flex min-w-0 items-baseline gap-3">
+            <h1 className="font-display text-[11px] uppercase sm:text-2xl">
               1bit<span className="text-ink-2">.world</span>
             </h1>
-            <span className="hidden text-xs text-ink-2 sm:inline">
+            <span className="hidden text-xs text-ink-2 lg:inline">
               dither anything · in your browser
             </span>
           </div>
@@ -96,7 +96,7 @@ export default function Home() {
             <button
               onClick={pasteFromClipboard}
               title="Paste image from clipboard"
-              className="btn px-3 py-2 text-sm font-display uppercase tracking-wider"
+              className="btn px-2 py-2 text-[11px] font-display uppercase sm:px-3"
             >
               <Icon name="paste" size={18} />
               <span className="hidden sm:inline">Paste</span>
@@ -105,7 +105,7 @@ export default function Home() {
           {bitmap && (
             <FilePicker
               onFile={loadFile}
-              className="btn cursor-pointer px-3 py-2 text-sm font-display uppercase tracking-wider"
+              className="btn cursor-pointer px-2 py-2 text-[11px] font-display uppercase sm:px-3"
             >
               <Icon name="image" size={18} />
               <span className="hidden sm:inline">New image</span>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Pixelify_Sans, DM_Mono } from "next/font/google";
+import { Press_Start_2P, DM_Mono } from "next/font/google";
 import "./globals.css";
 
-const pixel = Pixelify_Sans({
+const pixel = Press_Start_2P({
   variable: "--font-pixel",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400",
 });
 
 const mono = DM_Mono({

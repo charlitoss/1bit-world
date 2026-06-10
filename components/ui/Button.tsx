@@ -17,7 +17,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`btn ${active ? "btn-on" : ""} px-3 py-2 text-sm font-display uppercase tracking-wider ${className}`}
+      className={`btn ${active ? "btn-on" : ""} px-3 py-2 text-[11px] font-display uppercase ${className}`}
       {...props}
     >
       {icon && <Icon name={icon} size={18} />}

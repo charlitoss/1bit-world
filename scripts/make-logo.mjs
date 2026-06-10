@@ -3,9 +3,9 @@
 // it scales crisply and inherits the theme colour via `currentColor`.
 import { writeFileSync } from "node:fs";
 
-const N = 36; // grid (logo is N×N cells)
+const N = 20; // grid (logo is N×N cells) — smaller = chunkier pixels
 const c = (N - 1) / 2;
-const R = N * 0.47;
+const R = N * 0.48;
 
 // --- value-noise fbm for continents -----------------------------------------
 const hash = (n) => {
@@ -58,11 +58,12 @@ for (let y = 0; y < N; y++) {
     const z = Math.sqrt(1 - d2);
     const lon = Math.atan2(dx, z);
     const lat = Math.asin(Math.max(-1, Math.min(1, dy)));
-    const land = fbm(lon * 1.7 + 3.1, lat * 1.9 + 1.4) > 0.52;
-    const albedo = land ? 0.92 : 0.42;
-    const limb = 0.55 + 0.45 * z; // darker toward the rim
+    const land = fbm(lon * 1.7 + 3.1, lat * 1.9 + 1.4) > 0.5;
+    // Bright land vs. dark sea → seas read as dense ink, continents stay light.
+    const albedo = land ? 1.0 : 0.26;
+    const limb = 0.74 + 0.26 * z; // gentle rim darkening so seas read across
     const dot = Math.max(0, dx * L[0] + dy * L[1] + z * L[2]);
-    const light = 0.7 + 0.3 * dot;
+    const light = 0.86 + 0.14 * dot;
     gray[i] = Math.max(0, Math.min(255, 255 * albedo * limb * light));
   }
 }

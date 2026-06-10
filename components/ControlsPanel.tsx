@@ -23,7 +23,7 @@ function Group({
         first ? "space-y-3" : "space-y-3 border-t-2 border-ink/15 pt-4"
       }
     >
-      <h3 className="font-display text-xs uppercase tracking-widest text-ink-2">
+      <h3 className="font-display text-[11px] uppercase tracking-wide text-ink-2">
         {title}
       </h3>
       {children}
@@ -78,7 +78,7 @@ export function ControlsPanel() {
             <button
               key={a.id}
               onClick={() => update("algorithm", a.id)}
-              className={`btn px-2 py-2 text-[12px] font-display uppercase tracking-wide ${
+              className={`btn px-2 py-2 text-[9px] font-display uppercase leading-relaxed ${
                 settings.algorithm === a.id ? "btn-on" : ""
               }`}
             >
@@ -119,7 +119,7 @@ export function ControlsPanel() {
                 <span className="border-2 border-ink">
                   <PatternSwatch pattern={p.id} />
                 </span>
-                <span className="font-display text-[10px] uppercase tracking-wide">
+                <span className="font-display text-[8px] uppercase">
                   {p.name}
                 </span>
               </button>
@@ -160,7 +160,7 @@ export function ControlsPanel() {
                     backgroundImage: `linear-gradient(135deg, ${p.dark} 0 50%, ${p.light} 50% 100%)`,
                   }}
                 />
-                <span className="font-display text-[11px] uppercase tracking-wide">
+                <span className="font-display text-[9px] uppercase">
                   {p.name}
                 </span>
               </button>
@@ -175,7 +175,7 @@ export function ControlsPanel() {
         >
           <button
             onClick={() => update("paletteId", CUSTOM_PALETTE_ID)}
-            className="flex items-center gap-1 font-display text-[11px] uppercase tracking-wide"
+            className="flex items-center gap-1 font-display text-[9px] uppercase"
           >
             {isCustom && <Icon name="check" size={14} />}
             Custom
@@ -196,7 +196,7 @@ export function ControlsPanel() {
 
         <button
           onClick={() => update("invert", !settings.invert)}
-          className={`btn w-full px-3 py-2 text-sm font-display uppercase tracking-wider ${
+          className={`btn w-full px-3 py-2 text-[10px] font-display uppercase ${
             settings.invert ? "btn-on" : ""
           }`}
         >
@@ -247,7 +247,7 @@ export function ControlsPanel() {
 
       <button
         onClick={reset}
-        className="btn justify-center px-3 py-2 text-sm font-display uppercase tracking-wider"
+        className="btn justify-center px-3 py-2 text-[10px] font-display uppercase"
       >
         <Icon name="reset" size={18} />
         Reset all

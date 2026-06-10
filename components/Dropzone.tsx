@@ -48,9 +48,7 @@ export function Dropzone({ onFile }: { onFile: (file: File) => void }) {
             <Icon name="upload" size={30} />
           </div>
           <div>
-            <p className="font-display text-2xl uppercase tracking-wider">
-              Drop an image
-            </p>
+            <p className="font-display text-base uppercase">Drop an image</p>
             <p className="mt-2 text-sm text-ink-2">click to browse</p>
           </div>
         </FilePicker>
@@ -58,7 +56,7 @@ export function Dropzone({ onFile }: { onFile: (file: File) => void }) {
         {mounted && canReadClipboard() && (
           <button
             onClick={handlePaste}
-            className="btn px-4 py-2 text-sm font-display uppercase tracking-wider"
+            className="btn px-4 py-2 text-[10px] font-display uppercase"
           >
             <Icon name="paste" size={18} />
             Paste from clipboard

@@ -47,6 +47,30 @@ body {
   -webkit-font-smoothing: none;
 }
 
+/* ---- Themed scrollbars (square + chunky, follow the palette) ------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink) var(--color-paper-3);
+}
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper-3);
+  border-left: 2px solid var(--color-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink);
+  border: 3px solid var(--color-paper-3);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-2);
+}
+::-webkit-scrollbar-corner {
+  background: var(--color-paper-3);
+}
+
 /* ---- Retro primitives ---------------------------------------------------- */
 
 /* Triple-line "rope" border panel. */
