@@ -93,9 +93,14 @@ export function ControlsPanel() {
         >
           <Icon name="redo" size={16} />
         </button>
-        <span className="ml-auto font-display text-[9px] uppercase tracking-wide text-ink-2">
-          Undo · Redo
-        </span>
+        <button
+          onClick={reset}
+          title="Reset all settings"
+          className="btn ml-auto px-2.5 py-1.5 text-[9px] font-display uppercase"
+        >
+          <Icon name="reset" size={14} />
+          Reset
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-4">
@@ -271,14 +276,6 @@ export function ControlsPanel() {
           onChange={(v) => update("grain", v)}
         />
       </Group>
-
-      <button
-        onClick={reset}
-        className="btn justify-center px-3 py-2 text-[10px] font-display uppercase"
-      >
-        <Icon name="reset" size={18} />
-        Reset all
-      </button>
       </div>
     </div>
   );

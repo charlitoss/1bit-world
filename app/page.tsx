@@ -6,8 +6,9 @@ import { getEngine, type RenderOutput } from "@/lib/image/engine";
 import { Dropzone } from "@/components/Dropzone";
 import { PreviewCanvas } from "@/components/PreviewCanvas";
 import { ControlsPanel } from "@/components/ControlsPanel";
-import { FilePicker } from "@/components/ui/FilePicker";
+import { AboutModal } from "@/components/AboutModal";
 import { Icon } from "@/components/ui/Icon";
+import { Modal } from "@/components/ui/Modal";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { EarthLogo } from "@/components/ui/EarthLogo";
 import { canReadClipboard, readImageFromClipboard } from "@/lib/export/share";
@@ -20,6 +21,8 @@ export default function Home() {
   const [output, setOutput] = useState<RenderOutput | null>(null);
   const [busy, setBusy] = useState(false);
   const seqRef = useRef(0);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [newImageOpen, setNewImageOpen] = useState(false);
 
   const loadFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -120,23 +123,22 @@ export default function Home() {
             </button>
           )}
           {bitmap && (
-            <FilePicker
-              onFile={loadFile}
-              className="btn cursor-pointer px-2 py-2 text-[11px] font-display uppercase sm:px-3"
+            <button
+              onClick={() => setNewImageOpen(true)}
+              className="btn px-2 py-2 text-[11px] font-display uppercase sm:px-3"
             >
               <Icon name="image" size={18} />
               <span className="hidden sm:inline">New image</span>
-            </FilePicker>
+            </button>
           )}
-          <a
-            href="https://github.com/charlitoss/1bit-world"
-            target="_blank"
-            rel="noreferrer"
+          <button
+            onClick={() => setAboutOpen(true)}
             className="btn px-2 py-2"
-            title="Source on GitHub"
+            title="About"
+            aria-label="About"
           >
-            <Icon name="github" size={18} />
-          </a>
+            <Icon name="info" size={18} />
+          </button>
         </div>
       </header>
 
@@ -163,10 +165,20 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="shrink-0 px-4 py-2 text-center text-[11px] text-ink-2">
-        100% client-side — your images never leave this device. Video support
-        coming next.
-      </footer>
+      <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+
+      <Modal
+        open={newImageOpen}
+        onClose={() => setNewImageOpen(false)}
+        title="New image"
+      >
+        <Dropzone
+          onFile={(f) => {
+            loadFile(f);
+            setNewImageOpen(false);
+          }}
+        />
+      </Modal>
     </div>
   );
 }

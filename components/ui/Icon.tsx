@@ -16,6 +16,9 @@ export type IconName =
   | "github"
   | "sun"
   | "moon"
+  | "info"
+  | "mail"
+  | "message"
   | "sliders";
 
 const PATHS: Record<IconName, ReactNode> = {
@@ -104,6 +107,20 @@ const PATHS: Record<IconName, ReactNode> = {
       stroke="none"
     />
   ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5" />
+      <rect x="11.1" y="7" width="1.8" height="1.8" fill="currentColor" stroke="none" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" />
+      <path d="M3 7l9 6 9-6" />
+    </>
+  ),
+  message: <path d="M4 5h16v10H10l-4 4v-4H4z" />,
   github: (
     <path
       d="M12 3a9 9 0 0 0-2.8 17.5c.4.1.6-.2.6-.4v-1.7c-2.5.5-3-1.2-3-1.2-.4-1-1-1.3-1-1.3-.8-.6 0-.6 0-.6.9.1 1.4.9 1.4.9.8 1.4 2.1 1 2.6.8.1-.6.3-1 .6-1.2-2-.2-4.1-1-4.1-4.4 0-1 .3-1.8.9-2.4-.1-.3-.4-1.2.1-2.4 0 0 .7-.2 2.4.9a8.4 8.4 0 0 1 4.4 0c1.7-1.1 2.4-.9 2.4-.9.5 1.2.2 2.1.1 2.4.6.6.9 1.4.9 2.4 0 3.4-2.1 4.2-4.1 4.4.3.3.6.8.6 1.7v2.5c0 .2.2.5.6.4A9 9 0 0 0 12 3z"
