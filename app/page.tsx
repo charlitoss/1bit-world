@@ -145,7 +145,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="shrink-0 border-t-2 border-ink px-4 py-2 text-center text-[11px] text-ink-2">
+      <footer className="shrink-0 px-4 py-2 text-center text-[11px] text-ink-2">
         100% client-side — your images never leave this device. Video support
         coming next.
       </footer>
