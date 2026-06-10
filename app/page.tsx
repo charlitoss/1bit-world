@@ -6,7 +6,6 @@ import { getEngine, type RenderOutput } from "@/lib/image/engine";
 import { Dropzone } from "@/components/Dropzone";
 import { PreviewCanvas } from "@/components/PreviewCanvas";
 import { ControlsPanel } from "@/components/ControlsPanel";
-import { ExportBar } from "@/components/ExportBar";
 import { FilePicker } from "@/components/ui/FilePicker";
 import { Icon } from "@/components/ui/Icon";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -130,13 +129,14 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <section className="flex min-h-0 flex-1 flex-col gap-3">
+            <section className="flex min-h-0 flex-1 flex-col">
               <PreviewCanvas
                 output={output}
                 busy={busy}
                 sourceUrl={sourceUrl}
+                bitmap={bitmap}
+                baseName={baseName}
               />
-              <ExportBar bitmap={bitmap} baseName={baseName} />
             </section>
             <aside className="flex min-h-0 w-full flex-1 lg:w-96 lg:flex-none">
               <ControlsPanel />

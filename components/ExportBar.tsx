@@ -61,13 +61,16 @@ export function ExportBar({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <Button
         icon="download"
         onClick={() => run("download")}
         disabled={busy !== null}
+        title="Download PNG"
       >
-        {busy === "download" ? "…" : "Download"}
+        <span className="hidden sm:inline">
+          {busy === "download" ? "…" : "Download"}
+        </span>
       </Button>
       <Button
         icon={copied ? "check" : "copy"}
@@ -75,15 +78,20 @@ export function ExportBar({
         disabled={busy !== null || !canCopyImage()}
         title={canCopyImage() ? "Copy PNG to clipboard" : "Clipboard unsupported"}
       >
-        {copied ? "Copied" : busy === "copy" ? "…" : "Copy"}
+        <span className="hidden sm:inline">
+          {copied ? "Copied" : busy === "copy" ? "…" : "Copy"}
+        </span>
       </Button>
       {shareable && (
         <Button
           icon="share"
           onClick={() => run("share")}
           disabled={busy !== null}
+          title="Share"
         >
-          {busy === "share" ? "…" : "Share"}
+          <span className="hidden sm:inline">
+            {busy === "share" ? "…" : "Share"}
+          </span>
         </Button>
       )}
     </div>
