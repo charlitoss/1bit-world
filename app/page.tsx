@@ -101,14 +101,9 @@ export default function Home() {
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
           <EarthLogo className="h-7 w-7 shrink-0 sm:h-9 sm:w-9" />
-          <div className="flex min-w-0 items-baseline gap-3">
-            <h1 className="font-display text-[11px] uppercase sm:text-2xl">
-              1bit<span className="text-ink-2">.world</span>
-            </h1>
-            <span className="hidden text-xs text-ink-2 lg:inline">
-              dither anything · in your browser
-            </span>
-          </div>
+          <h1 className="min-w-0 font-display text-[11px] uppercase sm:text-2xl">
+            1bit<span className="text-ink-2">.world</span>
+          </h1>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -144,7 +139,10 @@ export default function Home() {
 
       <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 lg:flex-row">
         {!bitmap ? (
-          <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4">
+            <h2 className="mx-auto max-w-3xl text-center font-display leading-[1.18] text-[26px] sm:text-[38px] lg:text-[52px]">
+              Dither anything in your browser
+            </h2>
             <Dropzone onFile={loadFile} />
           </div>
         ) : (
