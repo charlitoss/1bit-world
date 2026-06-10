@@ -62,7 +62,9 @@ function PatternSwatch({ pattern }: { pattern: PatternId }) {
 }
 
 export function ControlsPanel() {
-  const { settings, update, reset } = useSettings();
+  const { settings, update, reset, undo, redo, past, future } = useSettings();
+  const canUndo = past.length > 0;
+  const canRedo = future.length > 0;
   const isCustom = settings.paletteId === CUSTOM_PALETTE_ID;
 
   const setCustomColor = (key: "customDark" | "customLight", v: string) => {
@@ -71,8 +73,33 @@ export function ControlsPanel() {
   };
 
   return (
-    <div className="panel flex min-h-0 w-full flex-1 flex-col gap-5 overflow-y-auto p-4">
-      <Group title="Dither" first>
+    <div className="panel flex min-h-0 w-full flex-1 flex-col">
+      <div className="flex shrink-0 items-center gap-2 border-b-2 border-ink/15 px-3 py-2.5">
+        <button
+          onClick={undo}
+          disabled={!canUndo}
+          title="Undo (⌘Z / Ctrl+Z)"
+          aria-label="Undo"
+          className="btn px-2 py-1.5"
+        >
+          <Icon name="undo" size={16} />
+        </button>
+        <button
+          onClick={redo}
+          disabled={!canRedo}
+          title="Redo (⌘⇧Z / Ctrl+Y)"
+          aria-label="Redo"
+          className="btn px-2 py-1.5"
+        >
+          <Icon name="redo" size={16} />
+        </button>
+        <span className="ml-auto font-display text-[9px] uppercase tracking-wide text-ink-2">
+          Undo · Redo
+        </span>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-4">
+        <Group title="Dither" first>
         <div className="grid grid-cols-2 gap-2">
           {ALGORITHMS.map((a) => (
             <button
@@ -252,6 +279,7 @@ export function ControlsPanel() {
         <Icon name="reset" size={18} />
         Reset all
       </button>
+      </div>
     </div>
   );
 }

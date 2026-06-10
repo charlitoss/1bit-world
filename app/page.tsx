@@ -67,6 +67,24 @@ export default function Home() {
     return () => window.removeEventListener("paste", onPaste);
   }, [loadFile]);
 
+  // Undo / redo keyboard shortcuts.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey)) return;
+      const key = e.key.toLowerCase();
+      if (key === "z") {
+        e.preventDefault();
+        if (e.shiftKey) useSettings.getState().redo();
+        else useSettings.getState().undo();
+      } else if (key === "y") {
+        e.preventDefault();
+        useSettings.getState().redo();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   // Clean up the object URL on unmount.
   useEffect(
     () => () => {

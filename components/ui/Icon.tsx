@@ -7,6 +7,8 @@ export type IconName =
   | "paste"
   | "share"
   | "reset"
+  | "undo"
+  | "redo"
   | "image"
   | "invert"
   | "close"
@@ -55,6 +57,18 @@ const PATHS: Record<IconName, ReactNode> = {
     <>
       <path d="M5 12a7 7 0 1 1 2 5" />
       <path d="M4 20v-5h5" />
+    </>
+  ),
+  undo: (
+    <>
+      <path d="M9 7L5 11l4 4" />
+      <path d="M5 11h8a5 5 0 0 1 5 5v1" />
+    </>
+  ),
+  redo: (
+    <>
+      <path d="M15 7l4 4-4 4" />
+      <path d="M19 11h-8a5 5 0 0 0-5 5v1" />
     </>
   ),
   image: (
